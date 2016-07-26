@@ -23,6 +23,7 @@
     },
     "solutionName": {
       "type": "string",
+      "defaultValue": "uniqueString(resourceGroup().id)",
       "metadata": {
         "description": "The name of your solution (will be used to prefix the services names)"
       }
