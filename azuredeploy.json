@@ -27,14 +27,14 @@
         "description": "The name of your solution (will be used to prefix the services names)"
       }
     },
-        "iotHubSku": {
+    "iotHubSku": {
       "type": "string",
       "allowedValues": [
         "F1",
         "S1",
         "S2"
       ],
-      "defaultValue": "S1",
+      "defaultValue": "F1",
       "metadata": {
         "description": "The Iothub Sku"
       }
@@ -47,7 +47,7 @@
         "Basic",
         "Standard"
       ],
-      "defaultValue": "Standard",
+      "defaultValue": "Free",
       "metadata": {
         "description": "The pricing tier for the hosting plan for Azure Function."
       }
@@ -66,9 +66,11 @@
     "iotHubKeyName": "iothubowner",
     "iotHubKeyResource": "[resourceId('Microsoft.Devices/Iothubs/Iothubkeys', variables('iotHubName'), variables('iotHubKeyName'))]",
     "functionAppName": "[concat(parameters('solutionName'), 'functionApp')]",
-    "functionName": "iothubpingfunction",
-    "receiveDataFunctionName": "receivedatafunction",
-    "repoUrl":"https://github.com/binderjoe/iot-hub-echo-preview",
+    "registerDeviceFunction": "RegisterDevice",
+    "listDevicesFunction": "ListDevices",
+    "receiveDeviceMessagesFunction": "ReceiveDeviceMessages",
+    "sendDeviceCommandFunction": "SendDeviceCommand",
+    "repoUrl":"https://github.com/binderjoe/azureiothub-dev-setup",
     "branch":"master"
   },
   "resources": [
@@ -139,7 +141,7 @@
             "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2015-05-01-preview').key1,';')]",
             "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2015-05-01-preview').key1,';')]",
             "AZUREJOBS_EXTENSION_VERSION": "beta",
-            "FUNCTIONS_EXTENSION_VERSION": "~0.3",
+            "FUNCTIONS_EXTENSION_VERSION": "~0.4",
 	          "AzureIoTHubConnectionString": "[concat('HostName=', reference(variables('iotHubResourceId')).hostName, ';SharedAccessKeyName=', variables('iotHubKeyName'), ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'), variables('iotHubVersion')).primaryKey)]",
             "AzureIoTHubEventHubConnectionString": "[concat('Endpoint=', reference(variables('iotHubResourceId')).eventHubEndpoints.events.endpoint, ';SharedAccessKeyName=', variables('iotHubKeyName'), ';SharedAccessKey=', listkeys(variables('iotHubKeyResource'), variables('iotHubVersion')).primaryKey)]",
             "DeviceStorageConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('deviceStorageName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('deviceStorageName')), '2015-05-01-preview').key1,';')]"
@@ -162,7 +164,7 @@
         },   
         {
           "apiVersion": "2015-08-01",
-          "name": "[variables('functionName')]",
+          "name": "[variables('registerDeviceFunction')]",
           "type": "functions",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
@@ -174,20 +176,64 @@
              "config": {
                 "bindings": [
                   {
-                      "name": "myEventHubTrigger",
-                      "direction": "in",
-                      "type": "eventHubTrigger",
-                      "path": "[variables('iotHubName')]",
-                      "connection": "AzureIoTHubEventHubConnectionString"
+                    "type": "manualTrigger",
+                    "direction": "in",
+                    "name": "input"
                   }
                 ]
             },
-            "test_data": "{ 'deviceId': 'nodedevice', 'message': 'Hello' }"
+            "test_data": "{ 'deviceId': 'mynewdevice'}"
           }
         },
         {
           "apiVersion": "2015-08-01",
-          "name": "[variables('receiveDataFunctionName')]",
+          "name": "[variables('listDevicesFunction')]",
+          "type": "functions",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+            "[resourceId('Microsoft.Web/Sites/config', variables('functionAppName'), 'appsettings')]",
+            "[resourceId('Microsoft.Web/Sites/sourcecontrols', variables('functionAppName'), 'web')]",
+            "[concat('Microsoft.Devices/Iothubs/', variables('iotHubName'))]"
+          ],
+          "properties": {
+             "config": {
+                "bindings": [
+                  {
+                    "type": "manualTrigger",
+                    "direction": "in",
+                    "name": "input"
+                  }
+                ]
+            },
+            "test_data": "{ 'deviceId': 'mynewdevice'}"
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "[variables('sendDeviceCommandFunction')]",
+          "type": "functions",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+            "[resourceId('Microsoft.Web/Sites/config', variables('functionAppName'), 'appsettings')]",
+            "[resourceId('Microsoft.Web/Sites/sourcecontrols', variables('functionAppName'), 'web')]",
+            "[concat('Microsoft.Devices/Iothubs/', variables('iotHubName'))]"
+          ],
+          "properties": {
+             "config": {
+                "bindings": [
+                  {
+                    "type": "manualTrigger",
+                    "direction": "in",
+                    "name": "input"
+                  }
+                ]
+            },
+            "test_data": "{ 'deviceId': 'mynewdevice'}"
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "[variables('receiveDeviceMessagesFunction')]",
           "type": "functions",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
@@ -214,7 +260,7 @@
                   }
                 ]
             },
-            "test_data": "{ 'deviceId': 'nodedevice', 'message': 'Hello' }"
+            "test_data": "{ 'deviceId': 'mynewdevice', 'temperature': '42' }"
           }
         }
         
