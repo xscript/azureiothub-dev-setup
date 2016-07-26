@@ -65,7 +65,9 @@ echo Handling Function deployment.
 
 :: npm packages install
 cd "%DEPLOYMENT_TARGET%"
-FOR /F %%d in ('DIR /a:d /B') DO ( 
+echo "Looking for Node package.json files to install..."
+FOR /F %%d in ('DIR /a:d /B /S') DO ( 
+    echo cd %%d
     cd %%d
 
     IF EXIST "package.json" (
