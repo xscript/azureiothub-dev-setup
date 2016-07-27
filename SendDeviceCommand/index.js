@@ -11,7 +11,7 @@ module.exports = function (context, input) {
   var targetDevice = input.deviceId;
   var message = new Message('blink');
   message.ack = 'full';
-  message.messageId = generateMessageId();;
+  message.messageId = generateMessageId();
 
   client.open(function (err) {
     client.getFeedbackReceiver(receiveFeedback);
