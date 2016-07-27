@@ -182,7 +182,7 @@
                   }
                 ]
             },
-            "test_data": "{ 'deviceId': 'mynewdevice'}"
+            "test_data": "mynewdevice"
           }
         },
         {
@@ -204,8 +204,7 @@
                     "name": "input"
                   }
                 ]
-            },
-            "test_data": "{ 'deviceId': 'mynewdevice'}"
+            }  
           }
         },
         {

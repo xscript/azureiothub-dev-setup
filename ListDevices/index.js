@@ -1,6 +1,5 @@
 var Registry = require('azure-iothub').Registry;
 var connectionString = process.env.AzureIoTHubConnectionString;
-var prettyjson = require('prettyjson');
 
 module.exports = function (context, input) {
   var registry = Registry.fromConnectionString(connectionString);

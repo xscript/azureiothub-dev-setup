@@ -8,7 +8,7 @@ var connectionString = process.env.AzureIoTHubConnectionString;
 
 module.exports = function (context, input) {
     var client = Client.fromConnectionString(connectionString);
-    var targetDevice = input;
+    var targetDevice = input.deviceId;
     var message = new Message('blink');
     message.ack = 'full';
     message.messageId = "SomeMessageId";
