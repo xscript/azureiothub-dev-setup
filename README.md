@@ -4,8 +4,7 @@ An unofficial ARM template for deploying a developer friendly Azure IoT Hub, Azu
   - **ListDevice**: List all device ids that are registered in the IoT Hub
   - **ReceiveDeviceMessage**: Called whenever a message is received on the IotHub.  The function stores the device message in an Azure Storage table by default
   - **SendDeviceCommand**: Sends a command to a device from Azure and prints the result
-  - **GetDeviceInfo**: Gets the metadata for a device with a given device id.
-
+ 
 ### Deploy an Azure IoT Hub with Azure Functions ###
 
 Click on the blue button below
