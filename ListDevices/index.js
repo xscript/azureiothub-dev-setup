@@ -7,10 +7,8 @@ module.exports = function (context, input) {
     if (err) {
         context.log(err)
     } else {
-        // context.log(prettyjson.render(list));
-        context.log('Device ID\tShared Access Key\tStatus')
       list.forEach(function (device) {
-        context.log(device.deviceId + '\t' + device.authentication.SymmetricKey.primaryKey + '\t' + device.status);
+        context.log(device.deviceId + '\t' + device.status);
       });
     }
   });
