@@ -70,8 +70,8 @@
     "listDevicesFunction": "ListDevices",
     "receiveDeviceMessagesFunction": "ReceiveDeviceMessages",
     "sendDeviceCommandFunction": "SendDeviceCommand",
-    "repoUrl": "https://github.com/binderjoe/azureiothub-dev-setup",
-    "branch": "master"
+    "repoUrl": "https://github.com/xscript/azureiothub-dev-setup/",
+    "branch": "develop"
   },
   "resources": [
     {
